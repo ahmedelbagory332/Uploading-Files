@@ -1,11 +1,13 @@
 package com.example.uploadingfiles.ui
 
 import android.Manifest
+import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.TextView
 import android.widget.Toast
@@ -16,6 +18,10 @@ import androidx.core.app.ActivityCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.uploadingfiles.R
+import com.example.uploadingfiles.utils.getAvailableInternalMemorySize
+import com.example.uploadingfiles.utils.getFilePathFromUri
+import com.example.uploadingfiles.utils.getFileSize
+import java.io.File
 
 
 class MainActivity : AppCompatActivity() {
@@ -42,6 +48,8 @@ class MainActivity : AppCompatActivity() {
         addProductViewModel.response.observe(this, Observer {
             if (it.isNotEmpty()) {
                 Toast.makeText(this, it, Toast.LENGTH_LONG).show()
+                // new added
+              File(this.cacheDir, addProductViewModel.fileName.value.toString()).delete()
                 addProductViewModel.rest()
             }
 
@@ -51,6 +59,7 @@ class MainActivity : AppCompatActivity() {
         addProductViewModel.connectionError.observe(this, Observer {
             if (it.isNotEmpty()) {
                 Toast.makeText(this, it, Toast.LENGTH_LONG).show()
+                Log.d("TAG", "Bego Uploading Files: $it")
                 addProductViewModel.rest()
             }
 
@@ -73,17 +82,28 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun upload(view: View) {
-        Toast.makeText(this, "uploading...", Toast.LENGTH_SHORT).show()
 
-        addProductViewModel.upload(
-            "iphone 13",
-            "good product",
-            "13000",
-            "phones",
-            "0",
-            "0",
-            selectedFile
-        )
+
+          if(getFileSize(this@MainActivity,selectedFile)<getAvailableInternalMemorySize()){
+              Toast.makeText(this, "uploading...", Toast.LENGTH_SHORT).show()
+
+                  addProductViewModel.upload(
+                      "iphone 13",
+                      "good product",
+                      "13000",
+                      "phones",
+                      "0",
+                      "0",
+                      selectedFile,
+                      getFilePathFromUri(this@MainActivity,selectedFile,addProductViewModel)
+                  )
+
+          }else{
+              Toast.makeText(this, "no enough space", Toast.LENGTH_SHORT).show()
+
+          }
+
+
 
     }
 
@@ -105,7 +125,16 @@ class MainActivity : AppCompatActivity() {
             if (result.resultCode == RESULT_OK) {
                 // Get the Image from data
                 selectedFile = result.data!!.data!!
-                tvFile.text = selectedFile.path.toString()
+
+
+                tvFile.text =  selectedFile.path
+                Log.d("TAG", "Bego Uploading Files: ${selectedFile.scheme}")
+                Log.d("TAG", "Bego Uploading Files: ${ContentResolver.SCHEME_CONTENT}")
+                selectedFile.path?.let {
+                    Log.d("TAG", "Bego Uploading Files: $it")
+                }
+                Log.d("TAG", "Bego Uploading Files: ${this.contentResolver.getType(selectedFile)}")
+
 
             }
         }

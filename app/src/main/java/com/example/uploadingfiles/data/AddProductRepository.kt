@@ -5,7 +5,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.net.Uri
 import androidx.lifecycle.*
-import com.example.uploadingfiles.utils.FileUtils
 import retrofit2.Callback
 import okhttp3.MediaType
 import okhttp3.MultipartBody
@@ -39,10 +38,13 @@ class AddProductRepository constructor(private val ctx:Context) {
         product_section: String,
         product_offer_price: String,
         product_offer_percentage: String,
-        fileUri: Uri
+        fileUri: Uri,
+        fileRealPath: String
     ) {
+        // new added
 
-        val fileToSend = prepareFilePart("product_file", fileUri)
+         val fileToSend = prepareFilePart("product_file", fileRealPath,fileUri)
+
         val productNameRequestBody: RequestBody = RequestBody.create(MediaType.parse("text/plain"), product_name)
         val productDescriptionRequestBody: RequestBody = RequestBody.create(MediaType.parse("text/plain"), product_des)
         val productPriceRequestBody: RequestBody = RequestBody.create(MediaType.parse("text/plain"), product_price)
@@ -91,9 +93,13 @@ class AddProductRepository constructor(private val ctx:Context) {
 
 
 
-    private fun prepareFilePart(partName: String,  fileUri: Uri): MultipartBody.Part {
-       val file: File = FileUtils.getFile(ctx, fileUri)
-         val requestFile: RequestBody = RequestBody.create(
+
+
+    // new added
+
+    private fun prepareFilePart(partName: String,fileRealPath: String,fileUri: Uri): MultipartBody.Part {
+        val file: File = File(fileRealPath)
+        val requestFile: RequestBody = RequestBody.create(
             MediaType.parse(ctx.contentResolver.getType(fileUri)!!), file)
         return MultipartBody.Part.createFormData(partName, file.name, requestFile)
     }

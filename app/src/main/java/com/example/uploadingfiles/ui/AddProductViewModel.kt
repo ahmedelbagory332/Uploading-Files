@@ -12,6 +12,8 @@ class AddProductViewModel constructor(ctx:Context) : ViewModel() {
 
 
    private val addProductRepository = AddProductRepository(ctx)
+    // new added
+    private val _fileName = MutableLiveData("")
 
 
     val connectionError: LiveData<String>
@@ -21,10 +23,17 @@ class AddProductViewModel constructor(ctx:Context) : ViewModel() {
     val response: LiveData<String>
         get() = addProductRepository.serverResponse
 
+    // new added
+    val fileName: LiveData<String>
+        get() = _fileName
+
+    // new added
+    fun setFileName(name:String) {
+        _fileName.value = name
+    }
 
     fun rest() {
         addProductRepository.restAddProductVariables()
-
     }
 
     fun upload(
@@ -34,7 +43,8 @@ class AddProductViewModel constructor(ctx:Context) : ViewModel() {
         product_section: String,
         product_offer_price: String,
         product_offer_percentage: String,
-        fileUri: Uri) {
+        fileUri: Uri,
+        fileRealPath: String) {
         addProductRepository.uploadProduct(
             product_name,
             product_des,
@@ -42,7 +52,8 @@ class AddProductViewModel constructor(ctx:Context) : ViewModel() {
             product_section,
             product_offer_price,
             product_offer_percentage,
-            fileUri)
+            fileUri,
+            fileRealPath)
 
 
     }

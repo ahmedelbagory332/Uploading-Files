@@ -15,7 +15,7 @@ interface RetrofitService {
 
 
     @Multipart
-    @POST("your-end-point")
+    @POST("")
      fun addProduct(
         @Part("product_name") product_name: RequestBody?,
         @Part("product_des") product_des: RequestBody?,
@@ -38,7 +38,7 @@ interface RetrofitService {
                 val client = OkHttpClient()
 
                 val retrofit = Retrofit.Builder()
-                    .baseUrl("your-base-url")
+                    .baseUrl("")
                     .client(client)
                     .addConverterFactory(GsonConverterFactory.create(gson))
                     .build()

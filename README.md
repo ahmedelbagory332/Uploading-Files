@@ -2,4 +2,4 @@
 
 - Simple project on uploading files with retrofit using Multipart and MVVM
 
-Watch : https://youtu.be/BQY0dCWSObw
+Watch : https://www.linkedin.com/feed/update/urn:li:activity:7190022989743058944/
